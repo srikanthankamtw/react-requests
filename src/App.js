@@ -9,13 +9,22 @@ function App() {
 
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null);
 
   async function getMoviesHandler() {
 
     setIsLoading(true);
-    const response = await fetch(MOVIES_URL);
-    const data = await response.json();
-    setMovies(data.results);
+    setError(null);
+    try {
+      const response = await fetch(MOVIES_URL);
+      if (!response.ok) {
+        throw new Error("Something went wrong!");
+      }
+      const data = await response.json();
+      setMovies(data.results);
+    } catch(error) {
+      setError(error.message);
+    }
     setIsLoading(false);
   }
 
@@ -27,7 +36,8 @@ function App() {
       <section>
         { isLoading && <p> loading...</p> }
         { !isLoading && movies.length > 0 && <MoviesList movies={movies}/> }
-        { !isLoading && movies.length == 0 && <p> No movies fetched!</p> }
+        { !isLoading && movies.length == 0 && !error && <p> No movies fetched!</p> }
+        { !isLoading && error && <p>{error}</p>}
       </section>
     </React.Fragment>
   );
