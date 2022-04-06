@@ -9,15 +9,11 @@ function App() {
 
   const [movies, setMovies] = useState([]);
 
-  function getMoviesHandler() {
+  async function getMoviesHandler() {
 
-    fetch(MOVIES_URL)
-    .then( response => {
-      return response.json();
-    })
-    .then( data => {
-      setMovies(data.results);
-    })
+    const response = await fetch(MOVIES_URL);
+    const data = await response.json();
+    setMovies(data.results);
   }
 
   return (
