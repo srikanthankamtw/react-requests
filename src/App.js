@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from "axios";
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -15,16 +16,15 @@ function App() {
 
     setIsLoading(true);
     setError(null);
-    try {
-      const response = await fetch(MOVIES_URL);
-      if (!response.ok) {
-        throw new Error("Something went wrong!");
+
+    axios.get(MOVIES_URL)
+    .then(response => { return response.data })
+    .then(data => { setMovies(data.results)})
+    .catch(error => { 
+      if (error.response.status < 500){
+        setError("Something went wrong!");
       }
-      const data = await response.json();
-      setMovies(data.results);
-    } catch(error) {
-      setError(error.message);
-    }
+    })
     setIsLoading(false);
   }
 
@@ -36,7 +36,7 @@ function App() {
       <section>
         { isLoading && <p> loading...</p> }
         { !isLoading && movies.length > 0 && <MoviesList movies={movies}/> }
-        { !isLoading && movies.length == 0 && !error && <p> No movies fetched!</p> }
+        { !isLoading && movies.length === 0 && !error && <p> No movies fetched!</p> }
         { !isLoading && error && <p>{error}</p>}
       </section>
     </React.Fragment>
